@@ -30,91 +30,50 @@ import org.xml.sax.SAXException;
  */
 public class DataResults {
      Unit unit;
-      Scene scene;
-      Item item;
-      String p1;
-      static String p2="D:\\workSpace\\Book4-2\\";     //路径的写法
-      Map <String,String> map = new HashMap<String,String>();    //map的创建与使用；
+     Scene scene;
+     Item item;
+     JsonData jd;
+     String p1;
+    static String p2="D:\\huyu\\Book4\\";     //路径的写法;是收集数据的路径
       
-          //这个k应该是一个传入参数，这样才能保证k值不同；
       public void setAttributes(String path,Data data,int num) throws ParserConfigurationException, SAXException, IOException{
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document document = db.parse(new File(path+"map.xml"));   //得到源XML文件
         // 根据标签名访问节点
-        NodeList list = document.getElementsByTagName("item");
+        NodeList list = document.getElementsByTagName("scene");
         System.out.println("list length: "+ list.getLength());
         //来匹配Unit的值
-       // useMap(8);    //这个对应case
-        
-        
-        p1=path;
-        //dow.Download1(p1+"cover"+num+".png", p2+"cover"+num+".png");
-        
-        System.out.println(p1+"   "+p2);
        
         //设置unit的属性：
         unit = new Unit();
         unit.setIndex(num);   //num是用来改变每次unit 的index 值
-        unit.setPage("2-5");   
-        String mapKey = ""+num;
-        System.out.println("吴月吴月吴月"+mapKey);
-        unit.setTitle(map.get(mapKey));   //暂时没有cover，而且全设置成常量是想先验证看
-        unit.setCover("cover"+num+".png");
+        unit.setPage(null);   
+        unit.setTitle("");      //暂时没有cover，而且全设置成常量是想先验证看
+        unit.setCover("");
+        Integer n =1;
         // 遍历每一个节点
         for (int i = 0; i < list.getLength(); ++i)
         {
+            jd = new JsonData();
             scene = new Scene();
             scene.setIndex(i+1);
             System.out.println("----------------------");
             final Node node = list.item(i);
             //存储name属性
-            final String value00 = node.getAttributes().getNamedItem("name").getNodeValue(); 
-            System.out.println(value00); 
-            scene.setTitle(value00);
-            //存储page属性
-            final String value01 = node.getAttributes().getNamedItem("page").getNodeValue();  
-            System.out.println(value01); 
-            scene.setPage(value01);
-            //存储url属性
-            final String value02 = node.getAttributes().getNamedItem("url").getNodeValue();  //存储url属性
-            System.out.println("url:   "); 
-            //存储cover属性
-            final String value03 = node.getAttributes().getNamedItem("cover").getNodeValue();  
-            System.out.println(value03); 
-            scene.setCover(value03);
-            System.out.println(p1+value03+"   "+p2+value03);
-            
-           // dow.Download1(p1+value03, p2+value03);
-            
-            Document document1 = db.parse(new File(path+value02));   
-            NodeList list1 = document1.getElementsByTagName("item");
-   
-            for (int j = 0; j < list1.getLength(); ++j)
-          {
-            item = new Item();
-            item.setIndex(j+1);
-            System.out.println("===========\n=========");
-            final Node node1 = list1.item(j);
-            //存储display属性
-            final String value10 = node1.getAttributes().getNamedItem("display").getNodeValue();
-            System.out.println(value10);
-            item.setDisplay(value10);
+           //final String value00 = node.getAttributes().getNamedItem("name").getNodeValue(); 
+            final String value =node.getTextContent();
+            System.out.println(value); 
+            scene.setTitle(value);    //就是常用词汇的
           
-            //存储record 属性
-            final String value11 = node1.getAttributes().getNamedItem("record").getNodeValue();
-            System.out.println(value11);
-            item.setRecord(value11);
-            //存储mp3属性，并将该MP3文件拷贝到盘里面
-            final String value12 = node1.getAttributes().getNamedItem("mp3").getNodeValue();
-            System.out.println(value12);
-            item.setMp3(value12);
-            //  dow.Download1(p1+value12, p2+value12);
-            //将该item对象添加到scene的<item>类型的List中
-            scene.addItem(item);      
-          }
-          unit.addScene(scene);
-         
+            scene.setCover("");
+            jd.fromJson(scene,p2,path+value+"\\"+value+"_0.json",num,i+1);   //将每一个item添加到scene中
+             //n =scene.getItems().size();
+            Integer m =scene.getItems().size()+n;
+            Integer t=m-1;
+            scene.setPage(n.toString()+"-"+t.toString());
+            n=m;
+            unit.addScene(scene);
         }
          data.addUnit(unit);
 }

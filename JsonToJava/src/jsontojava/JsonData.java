@@ -16,8 +16,8 @@ public class JsonData {
    // static Integer size;
     Url urld = new Url();
     //Item item;
-    void fromJson(Scene scene ,String path,int sceneNum,int unitNum){
-        String JsonContext = new Util().ReadFile("D:\\download\\test.json");
+    void fromJson(Scene scene ,String path,String path1,int unitNum,int sceneNum){
+        String JsonContext = new Util().ReadFile(path1);
         JSONObject jsonObject = JSONObject.fromObject(JsonContext);
         JSONArray dialogs = jsonObject.getJSONArray("dialogs");
         int size = dialogs.size();
@@ -32,6 +32,8 @@ public class JsonData {
         String cn =items.getString("cn");
         item.setDisplay(natives+"\n"+cn);
         item.setRecord(natives+"\n"+cn);
+        item.setIndex(i+1);
+        item.setMp3(unitNum+"-"+sceneNum+"-"+(i+1)+".mp3");
         String audio_code =items.getString("audio_code"); 
         urld.httpDownload(audio_code,copy_path);    //通过这种方式可以给一个scene里面的所有mp3文件不重复命名，但是我要的是把一本书都放在一个文件夹里面，怎么也要三级命名
         scene.addItem(item);
